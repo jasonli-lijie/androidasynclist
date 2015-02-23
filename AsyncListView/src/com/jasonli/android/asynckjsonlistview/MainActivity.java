@@ -68,11 +68,6 @@ public class MainActivity extends Activity {
 				return true;
 	}
 
-	public void loadAllImages()
-	{
-		
-		
-	}
 	private class AsyncListViewLoader extends
 			AsyncTask<String, Void, List<FeedItem>> {
 		private final ProgressDialog dialog = new ProgressDialog(
@@ -87,7 +82,6 @@ public class MainActivity extends Activity {
 			adpt.setItemList(result);
 			adpt.notifyDataSetChanged();
 			MainActivity.this.setTitle(appTitle);
-			loadAllImages();
 		}
 
 		@Override
@@ -110,7 +104,6 @@ public class MainActivity extends Activity {
 				conn.connect();
 				InputStream is = conn.getInputStream();
 
-//JASON
 		        // Convert response to string using String Builder
 		        try {
 		            BufferedReader bReader = new BufferedReader(new InputStreamReader(is, "utf-8"), 8);
@@ -127,7 +120,7 @@ public class MainActivity extends Activity {
 		        } catch (Exception e) {
 		            Log.e("StringBuilding & BufferedReader", "Error converting result " + e.toString());
 		        }		
-//JASON
+//the following implementation has issue loading url from the feed
 				
 				// Read the stream
 /*				byte[] b = new byte[1024];
@@ -178,13 +171,11 @@ public class MainActivity extends Activity {
 				description = "";
 			}
 
-//			String imageUrlobj = obj.getJSONObject("imageHref").toString();
 			String imageUrl = obj.getString("imageHref");
 			Log.i("Object Creation", "Title: " + title + "\nDescription: " + description + " \nImage URL: " + imageUrl);
 			FeedItem feedItem = new FeedItem(title, description, imageUrl);
 			if(!imageUrl.contains("null"))
 			{
-				//feedItem.setImage(getBitmapFromURL(imageUrl));
 				feedItem.loadImage(adpt);
 			}
 			return feedItem;

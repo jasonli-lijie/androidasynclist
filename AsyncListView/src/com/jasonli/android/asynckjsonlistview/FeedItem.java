@@ -74,15 +74,14 @@ public class FeedItem implements Serializable {
 	}
 	
     public void loadImage(SimpleAdapter adpt) {
-        // HOLD A REFERENCE TO THE ADAPTER
+        // to hold a reference to the adaptor
         this.adpt = adpt;
-        if (imageUrl.compareToIgnoreCase("null") !=0) {
-            new ImageLoadTask().execute(imageUrl);
-        }
+        new ImageLoadTask().execute(imageUrl);
     }
  
 	private class ImageLoadTask extends AsyncTask<String, String, Bitmap> {
         public Bitmap getBitmapFromURL(String src) {
+        	//to load image file from url - called within async task
             try {
                 URL url = new URL(src);
                 HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -115,7 +114,7 @@ public class FeedItem implements Serializable {
         }
  
         protected void onProgressUpdate(String... progress) {
-            // NO OP
+            // TODO: add percentage indicator in the status bar
         }
  
         protected void onPostExecute(Bitmap ret) {
@@ -123,7 +122,7 @@ public class FeedItem implements Serializable {
                 Log.i("ImageLoadTask", "Successfully loaded " + imageUrl );
                 image = ret;
                 if (adpt != null) {
-                    // WHEN IMAGE IS LOADED NOTIFY THE ADAPTER
+                    // notify the adaptor when loaded
                 	adpt.notifyDataSetChanged();
                 }
             } else {
