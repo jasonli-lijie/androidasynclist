@@ -87,7 +87,7 @@ public class MainActivity extends Activity {
 		@Override
 		protected void onPreExecute() {
 			super.onPreExecute();
-			dialog.setMessage("Downloading feed...");
+			dialog.setMessage(getResources().getString(R.string.downloading)); 
 			dialog.show();
 		}
 
