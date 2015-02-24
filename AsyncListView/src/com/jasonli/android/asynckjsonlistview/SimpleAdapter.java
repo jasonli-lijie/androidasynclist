@@ -7,7 +7,7 @@ package com.jasonli.android.asynckjsonlistview;
 
 import java.util.List;
 
-import com.survivingwithandroid.tutorial.asynclistview.R;
+import com.jasonli.android.asynckjsonlistview.R;
 
 import android.content.Context;
 import android.view.LayoutInflater;

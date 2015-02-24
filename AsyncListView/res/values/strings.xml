@@ -1,9 +1,9 @@
 <resources>
 
-    <string name="app_name">AsyncListView</string>
+    <string name="app_name">MainActivity</string>
     <string name="hello_world">Hello world!</string>
     <string name="menu_refresh">Refresh</string>
-    <string name="title_activity_main">MainActivity</string>
+    <string name="title_activity_main">Reading...</string>
     <string name="feed_url">https://dl.dropboxusercontent.com/u/746330/facts.json</string>
-    <string name="downloading">Downloading feed\.\.\.\.</string>
+    <string name="downloading">Downloading feed...</string>
 </resources>

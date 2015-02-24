@@ -19,7 +19,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.survivingwithandroid.tutorial.asynclistview.R;
+import com.jasonli.android.asynckjsonlistview.R;
 
 import android.os.AsyncTask;
 import android.os.Bundle;
