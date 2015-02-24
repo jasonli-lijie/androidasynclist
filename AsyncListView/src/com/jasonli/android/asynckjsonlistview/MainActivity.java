@@ -75,6 +75,64 @@ public class MainActivity extends Activity {
 		private String appTitle; // to update application title when loading
 									// completed
 
+		private class ImageLoadTask extends AsyncTask<String, String, Bitmap> {
+			private FeedItem currentItem = null;
+	        public Bitmap getBitmapFromURL(String src) {
+	        	//to load image file from url - called within async task
+	            try {
+	                URL url = new URL(src);
+	                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+	                connection.setDoInput(true);
+	                connection.connect();
+	                InputStream input = connection.getInputStream();
+	                Bitmap myBitmap = BitmapFactory.decodeStream(input);
+	                return myBitmap;
+	            } catch (IOException e) {
+	                e.printStackTrace();
+	                return null;
+	            }
+	        }
+	            	 
+	        public ImageLoadTask(FeedItem item)
+	        {
+	        	currentItem = item;
+	        }
+	        @Override
+	        protected void onPreExecute() {
+	            //Log.i("ImageLoadTask", "Loading image..." + imageUrl);
+	        }
+	 
+	        // PARAM[0] IS IMG URL
+	        protected Bitmap doInBackground(String... param) {
+	            Log.i("ImageLoadTask", "Attempting to load image URL: " + param[0]);
+	            try {
+	                Bitmap b = getBitmapFromURL(param[0]);
+	                return b;
+	            } catch (Exception e) {
+	                e.printStackTrace();
+	                return null;
+	            }
+	        }
+	 
+	        protected void onProgressUpdate(String... progress) {
+	            // TODO: add percentage indicator in the status bar
+	        }
+	 
+	        protected void onPostExecute(Bitmap ret) {
+	            if (ret != null) {
+	                //Log.i("ImageLoadTask", "Successfully loaded " + imageUrl );
+	            	
+	                currentItem.setImage(ret);
+	                if (adpt != null) {
+	                    // notify the adaptor when loaded
+	                	adpt.notifyDataSetChanged();
+	                }
+	            } else {
+	                Log.e("ImageLoadTask", "Failed to load " + currentItem.getImageUrl() );
+	            }
+	        }
+	    }    
+	    
 		@Override
 		protected void onPostExecute(List<FeedItem> result) {
 			super.onPostExecute(result);
@@ -82,6 +140,16 @@ public class MainActivity extends Activity {
 			adpt.setItemList(result);
 			adpt.notifyDataSetChanged();
 			MainActivity.this.setTitle(appTitle);
+			//now it is time to load all images in the background
+			for(FeedItem item: result)
+			{
+				String imgUrl = item.getImageUrl();
+				if(!imgUrl.contains("null"))
+				{
+					ImageLoadTask imgLoadTask = new ImageLoadTask(item);
+					imgLoadTask.execute(item.getImageUrl());
+				}
+			}
 		}
 
 		@Override
@@ -97,7 +165,7 @@ public class MainActivity extends Activity {
 			String JSONResp=null;
 			try {
 				URL u = new URL(params[0]);
-
+				//params[0] is the feed url
 				HttpURLConnection conn = (HttpURLConnection) u.openConnection();
 				conn.setRequestMethod("GET");
 
@@ -131,8 +199,9 @@ public class MainActivity extends Activity {
 
 				String JSONResp = new String(baos.toByteArray());*/
 		        
-//				String JSONResp = jParser.getJSONFromUrl(params[0]);
+		        //feed in JSONResp, top level is an object rather than array
 				JSONObject topObj = new JSONObject(JSONResp);
+				//get title from top object
 				appTitle = topObj.getString("title");
 				JSONArray arr = topObj.getJSONArray("rows");
 				for (int i = 0; i < arr.length(); i++) {
@@ -148,36 +217,20 @@ public class MainActivity extends Activity {
 
 		private FeedItem convertContact(JSONObject obj) throws JSONException {
 			String title = obj.getString("title");
-			if (title.isEmpty() || title.compareToIgnoreCase("null") == 0) // "null"
-																			// is
-																			// not
-																			// to
-																			// be
-																			// displayed
-																			// in
-																			// UI
+			if (title.isEmpty() || title.compareToIgnoreCase("null") == 0) 
+			// "null" is not to be displayed in UI
 			{
 				title = "";
 			}
 			String description = obj.getString("description");
-			if (description.isEmpty()
-					|| description.compareToIgnoreCase("null") == 0) // "null"
-																		// is
-																		// not
-																		// to be
-																		// displayed
-																		// in UI
+			if (description.isEmpty() || description.compareToIgnoreCase("null") == 0)
+			//"null" is not to be displayed in UI
 			{
 				description = "";
 			}
-
 			String imageUrl = obj.getString("imageHref");
-			Log.i("Object Creation", "Title: " + title + "\nDescription: " + description + " \nImage URL: " + imageUrl);
+//			Log.i("Object Creation", "Title: " + title + "\nDescription: " + description + " \nImage URL: " + imageUrl);
 			FeedItem feedItem = new FeedItem(title, description, imageUrl);
-			if(!imageUrl.contains("null"))
-			{
-				feedItem.loadImage(adpt);
-			}
 			return feedItem;
 		}
 
