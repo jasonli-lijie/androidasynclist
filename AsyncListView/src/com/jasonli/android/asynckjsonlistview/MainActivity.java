@@ -229,7 +229,7 @@ public class MainActivity extends Activity {
 				description = "";
 			}
 			String imageUrl = obj.getString("imageHref");
-//			Log.i("Object Creation", "Title: " + title + "\nDescription: " + description + " \nImage URL: " + imageUrl);
+
 			FeedItem feedItem = new FeedItem(title, description, imageUrl);
 			return feedItem;
 		}
